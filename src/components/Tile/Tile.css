@@ -1,0 +1,35 @@
+.tile {
+    display: grid;
+    place-content: center;
+    width: 200px;
+    height: 200px;
+}
+
+.tile .piece {
+    width: 200px;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 160px;
+}
+
+
+.tile .piece:hover {
+    cursor: grab;
+}
+
+.tile .piece:active {
+    cursor: grabbing;
+}
+
+.black-tile {
+    background-color: #779556;
+}
+
+.white-tile {
+    background-color: #ebecd0;
+}
+
+.tile img {
+    width: 150px;
+}
