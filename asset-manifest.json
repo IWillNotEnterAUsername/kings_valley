@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/kings_valley/static/css/main.707832c5.css",
-    "main.js": "/kings_valley/static/js/main.c3d135ed.js",
+    "main.js": "/kings_valley/static/js/main.322ee2b1.js",
     "static/js/787.414c05c6.chunk.js": "/kings_valley/static/js/787.414c05c6.chunk.js",
     "index.html": "/kings_valley/index.html",
     "main.707832c5.css.map": "/kings_valley/static/css/main.707832c5.css.map",
-    "main.c3d135ed.js.map": "/kings_valley/static/js/main.c3d135ed.js.map",
+    "main.322ee2b1.js.map": "/kings_valley/static/js/main.322ee2b1.js.map",
     "787.414c05c6.chunk.js.map": "/kings_valley/static/js/787.414c05c6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.707832c5.css",
-    "static/js/main.c3d135ed.js"
+    "static/js/main.322ee2b1.js"
   ]
 }
