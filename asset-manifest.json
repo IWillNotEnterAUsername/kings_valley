@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/kings_valley/static/css/main.814c0bb6.css",
-    "main.js": "/kings_valley/static/js/main.d1318114.js",
-    "static/js/787.414c05c6.chunk.js": "/kings_valley/static/js/787.414c05c6.chunk.js",
-    "index.html": "/kings_valley/index.html",
-    "main.814c0bb6.css.map": "/kings_valley/static/css/main.814c0bb6.css.map",
-    "main.d1318114.js.map": "/kings_valley/static/js/main.d1318114.js.map",
-    "787.414c05c6.chunk.js.map": "/kings_valley/static/js/787.414c05c6.chunk.js.map"
+    "main.css": "./static/css/main.814c0bb6.css",
+    "main.js": "./static/js/main.e20c00ff.js",
+    "static/js/787.414c05c6.chunk.js": "./static/js/787.414c05c6.chunk.js",
+    "index.html": "./index.html",
+    "main.814c0bb6.css.map": "./static/css/main.814c0bb6.css.map",
+    "main.e20c00ff.js.map": "./static/js/main.e20c00ff.js.map",
+    "787.414c05c6.chunk.js.map": "./static/js/787.414c05c6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.814c0bb6.css",
-    "static/js/main.d1318114.js"
+    "static/js/main.e20c00ff.js"
   ]
 }
