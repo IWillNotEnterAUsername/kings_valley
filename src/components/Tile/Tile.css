@@ -21,6 +21,10 @@
     background-size: 160px;
 }
 
+.tile.hidden {
+    display: none;
+}
+
 
 .tile .piece:hover {
     cursor: grab;

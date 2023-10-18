@@ -1,5 +1,5 @@
 import { PieceColor, PieceType, Piece, Position} from '../Constants'
-
+export var totalTurns = 1, winner = '';
 export default class Moveset {
     tileIsOccupied(x: number, y: number, boardState: Piece[]): boolean{
 
@@ -9,17 +9,41 @@ export default class Moveset {
         else return false;
     }
 
-
     isValidMove(
         initialPosition: Position,
         desiredPosition: Position,
         type: PieceType, 
         color: PieceColor, 
         boardState: Piece[]
-        ) {
+        ) { 
+            if(color === PieceColor.WHITE && totalTurns % 2 !== 1) return false;
+            if(color === PieceColor.BLACK && totalTurns % 2 !== 0) return false;
                 if(!this.tileIsOccupied(desiredPosition.x, desiredPosition.y, boardState)){
                     for(let i = 1; i < 5; i++){
+
+                    //king wins when at center
+                    if(type === PieceType.KING && color === PieceColor.WHITE && (desiredPosition.x === 2 && desiredPosition.y === 2)){
+                        winner = "White";
+                    }
                     
+                    if(type === PieceType.KING && color === PieceColor.BLACK && (desiredPosition.x === 2 && desiredPosition.y === 2)){
+                        winner = "Black";
+                    } 
+                    
+                    //pawn cannot go to center
+                    if(type === PieceType.PAWN && (desiredPosition.x === 2 && desiredPosition.y === 2)){
+                        break;
+                    }
+
+                    //white king cannot move on his first turn
+                    if(type === PieceType.KING && color === PieceColor.WHITE && totalTurns === 1){
+                        break;
+                    }
+
+                    //black king cannot move on his first turn
+                    if(type === PieceType.KING && color === PieceColor.BLACK && totalTurns === 2){
+                        break;
+                    }
                         
 
                     // movement vertical
@@ -28,6 +52,7 @@ export default class Moveset {
                         let passedPosition: Position = {x: initialPosition.x, y: initialPosition.y + (i * multiplayer)};
                         if(passedPosition.x === desiredPosition.x && passedPosition.y === desiredPosition.y && 
                         (this.tileIsOccupied(passedPosition.x, passedPosition.y + multiplayer, boardState) || (desiredPosition.y === 0 || desiredPosition.y === 4))){
+                            totalTurns ++;
                             return true;
                         }
                         else {
@@ -44,6 +69,7 @@ export default class Moveset {
                         let passedPosition: Position = {x: initialPosition.x + (i * multiplayer), y: initialPosition.y};
                         if((passedPosition.x === desiredPosition.x && passedPosition.y === desiredPosition.y) && 
                         (this.tileIsOccupied(passedPosition.x + multiplayer, passedPosition.y, boardState) || (desiredPosition.x === 0 || desiredPosition.x === 4))){
+                            totalTurns ++;
                             return true;
                         }
                         else {
@@ -65,6 +91,7 @@ export default class Moveset {
 
                     if(((desiredPosition.x - initialPosition.x === i && desiredPosition.y - initialPosition.y === i)) 
                     && ((this.tileIsOccupied(desiredPosition.x + 1, desiredPosition.y + 1, boardState) )|| (desiredPosition.x > 3 || desiredPosition.y > 3))){
+                        totalTurns ++;
                         return true;
 
                     } 
@@ -81,6 +108,7 @@ export default class Moveset {
 
                     if((desiredPosition.x - initialPosition.x === i && desiredPosition.y - initialPosition.y === -i) 
                     && (this.tileIsOccupied(desiredPosition.x + 1, desiredPosition.y - 1, boardState) || (desiredPosition.x > 3 || desiredPosition.y < 1))){
+                        totalTurns ++;
                         return true;
                     }
 
@@ -96,6 +124,7 @@ export default class Moveset {
 
                     if((desiredPosition.x - initialPosition.x === -i && desiredPosition.y - initialPosition.y === -i) 
                     && (this.tileIsOccupied(desiredPosition.x - 1, desiredPosition.y - 1, boardState) || (desiredPosition.x < 1 || desiredPosition.y < 1))){
+                        totalTurns ++;
                         return true;
                     }
 
@@ -112,23 +141,36 @@ export default class Moveset {
 
                     if((desiredPosition.x - initialPosition.x === -i && desiredPosition.y - initialPosition.y === i) 
                     && (this.tileIsOccupied(desiredPosition.x - 1, desiredPosition.y + 1, boardState) || (desiredPosition.x < 1 || desiredPosition.y > 3))){
+                        totalTurns ++;
                         return true;
                     }
                     }
                 }          
-        
         return false;
     }
 
 
-    getPossiblePawnMoves = (pawn: Piece, boardState: Piece[]) : Position[] => {
+    getPossibleMoves = (piece: Piece, boardState: Piece[]) : Position[] => {
 
 
         const possibleMoves: Position[] = [];
 
+        if(piece.color === PieceColor.WHITE && totalTurns % 2 !== 1) return possibleMoves;
+        if(piece.color === PieceColor.BLACK && totalTurns % 2 !== 0) return possibleMoves;
         // movement vertical down
     for(let i = 1; i < 5; i++){ 
-        const destinationVerticalDown: Position = {x: pawn.position.x, y: pawn.position.y - i};
+        
+        const destinationVerticalDown: Position = {x: piece.position.x, y: piece.position.y - i};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destinationVerticalDown.x === 2 && destinationVerticalDown.y === 2)){
+            continue;
+        }
+
+        //black king cannot move on his first turn
+        if(piece.type === PieceType.KING && piece.color === PieceColor.BLACK && totalTurns === 2){
+            break;
+        }
 
         if(this.tileIsOccupied(destinationVerticalDown.x, destinationVerticalDown.y, boardState)){
             break;
@@ -143,7 +185,18 @@ export default class Moveset {
 
         // movement vertical up
     for(let i = 1; i < 5; i++){ 
-        const destinationVerticalUp: Position = {x: pawn.position.x, y: pawn.position.y + i};
+        const destinationVerticalUp: Position = {x: piece.position.x, y: piece.position.y + i};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destinationVerticalUp.x === 2 && destinationVerticalUp.y === 2)){
+            continue;
+        }
+
+        //white king cannot move on his first turn
+        if(piece.type === PieceType.KING && piece.color === PieceColor.WHITE && totalTurns === 1){
+            break;
+        }
+
 
         if(this.tileIsOccupied(destinationVerticalUp.x, destinationVerticalUp.y, boardState)){
             break;
@@ -157,7 +210,12 @@ export default class Moveset {
 
         // movement horizontal left
     for(let i = 1; i < 5; i++){ 
-        const destinationHorizontalLeft: Position = {x: pawn.position.x - i, y: pawn.position.y};
+        const destinationHorizontalLeft: Position = {x: piece.position.x - i, y: piece.position.y};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destinationHorizontalLeft.x === 2 && destinationHorizontalLeft.y === 2)){
+            continue;
+        }        
 
         if(this.tileIsOccupied(destinationHorizontalLeft.x, destinationHorizontalLeft.y, boardState)){
             break;
@@ -171,7 +229,12 @@ export default class Moveset {
 
         // movement horizontal right    
     for(let i = 1; i < 5; i++){ 
-        const destinationHorizontalRight: Position = {x: pawn.position.x + i, y: pawn.position.y};
+        const destinationHorizontalRight: Position = {x: piece.position.x + i, y: piece.position.y};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destinationHorizontalRight.x === 2 && destinationHorizontalRight.y === 2)){
+            continue;
+        }           
 
         if(this.tileIsOccupied(destinationHorizontalRight.x, destinationHorizontalRight.y, boardState)){
             break;
@@ -186,13 +249,24 @@ export default class Moveset {
         // movement up right
         for(let i = 1; i < 5; i++){
 
-        const destination: Position = {x: pawn.position.x + i, y: pawn.position.y + i};
+        const destination: Position = {x: piece.position.x + i, y: piece.position.y + i};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destination.x === 2 && destination.y === 2)){
+            continue;
+        }
+        
+                //white king cannot move on his first turn
+        if(piece.type === PieceType.KING && piece.color === PieceColor.WHITE && totalTurns === 1){
+            break;
+        }
+
 
         if(this.tileIsOccupied(destination.x, destination.y, boardState)){
             break;
         }
         
-        if((destination.x - pawn.position.x === i && destination.y - pawn.position.y === i) 
+        if((destination.x - piece.position.x === i && destination.y - piece.position.y === i) 
         && (this.tileIsOccupied(destination.x + 1, destination.y + 1, boardState) || (destination.x > 3 || destination.y > 3))){
             possibleMoves.push(destination);
         } 
@@ -203,13 +277,23 @@ export default class Moveset {
         // movement bottom right
         for(let i = 1; i < 5; i++){
 
-        const destination: Position = {x: pawn.position.x + i, y: pawn.position.y - i};
+        const destination: Position = {x: piece.position.x + i, y: piece.position.y - i};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destination.x === 2 && destination.y === 2)){
+            continue;
+        }  
+        
+        //black king cannot move on his first turn
+        if(piece.type === PieceType.KING && piece.color === PieceColor.BLACK && totalTurns === 2){
+            break;
+        }
 
         if(this.tileIsOccupied(destination.x, destination.y, boardState)){
             break;
         }
 
-        if((destination.x - pawn.position.x === i && destination.y - pawn.position.y === -i) 
+        if((destination.x - piece.position.x === i && destination.y - piece.position.y === -i) 
         && (this.tileIsOccupied(destination.x + 1, destination.y - 1, boardState) || (destination.x > 3 || destination.y < 1))){
             possibleMoves.push(destination);
         }
@@ -220,13 +304,23 @@ export default class Moveset {
         // movement bottom left
         for(let i = 1; i < 5; i++){
 
-        const destination: Position = {x: pawn.position.x - i, y: pawn.position.y - i};
+        const destination: Position = {x: piece.position.x - i, y: piece.position.y - i};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destination.x === 2 && destination.y === 2)){
+            continue;
+        }
+        
+        //black king cannot move on his first turn
+        if(piece.type === PieceType.KING && piece.color === PieceColor.BLACK && totalTurns === 2){
+            break;
+        }
 
         if(this.tileIsOccupied(destination.x, destination.y, boardState)){
             break;
         }
 
-        if((destination.x - pawn.position.x === -i && destination.y - pawn.position.y === -i) 
+        if((destination.x - piece.position.x === -i && destination.y - piece.position.y === -i) 
         && (this.tileIsOccupied(destination.x - 1, destination.y - 1, boardState) || (destination.x < 1 || destination.y < 1))){
             possibleMoves.push(destination);
         }         
@@ -237,14 +331,24 @@ export default class Moveset {
         // movement top left
         for(let i = 1; i < 5; i++){
 
-        const destination: Position = {x: pawn.position.x - i, y: pawn.position.y + i};
+        const destination: Position = {x: piece.position.x - i, y: piece.position.y + i};
+
+        //pawn cannot go to center
+        if(piece.type === PieceType.PAWN && (destination.x === 2 && destination.y === 2)){
+            continue;
+        } 
+
+        //white king cannot move on his first turn
+        if(piece.type === PieceType.KING && piece.color === PieceColor.WHITE && totalTurns === 1){
+            break;
+        }              
 
         if(this.tileIsOccupied(destination.x, destination.y, boardState)){
             break;
             
         }
 
-        if((destination.x - pawn.position.x === -i && destination.y - pawn.position.y === i) 
+        if((destination.x - piece.position.x === -i && destination.y - piece.position.y === i) 
         && (this.tileIsOccupied(destination.x - 1, destination.y + 1, boardState) || (destination.x < 1 || destination.y > 3))){
             possibleMoves.push(destination);
         }
@@ -260,12 +364,12 @@ export default class Moveset {
         switch(piece.type)
         {
             case PieceType.PAWN:
-                return this.getPossiblePawnMoves(piece, boardState);
+                return this.getPossibleMoves(piece, boardState);
             case PieceType.KING:
-                return this.getPossiblePawnMoves(piece, boardState);
+                console.log(this.getPossibleMoves(piece, boardState))
+                return this.getPossibleMoves(piece, boardState);
             default: 
                 return [];    
         }
     }
-
 }
