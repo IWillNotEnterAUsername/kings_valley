@@ -1,6 +1,7 @@
 import './Board.css';
 import Tile from "../Tile/Tile";
 import Moveset from '../../Moveset/Moveset';
+import { winner } from '../../Moveset/Moveset';
 import React, {useRef, useState } from 'react';
 import { verticalAxis, 
     horizontalAxis, 
@@ -25,6 +26,9 @@ export default function Board(){
     const boardRef = useRef<HTMLDivElement>(null);
 
     const moveset = new Moveset();
+
+    const gameOverRef = useRef<HTMLDivElement>(null);
+
 
     function updateValidMoves(){
         setPieces((currentPieces) => {
@@ -113,6 +117,9 @@ export default function Board(){
                         if(validMove){
                             p.position.x = x;
                             p.position.y = y;
+                            if(winner !== ''){
+                                gameOverRef.current?.classList.remove("hidden");
+                            }
                         }
                         else {
                             activePiece.style.position = "relative";
@@ -127,7 +134,11 @@ export default function Board(){
             setActivePiece(null);
         }
     }
-        
+
+    function restartGame() {
+        gameOverRef.current?.classList.add("hidden");
+        window.location.reload();
+    }     
     let board = [];
     for(let j = verticalAxis.length - 1; j >= 0; j--){
         for(let i = 0; i < horizontalAxis.length; i++){
@@ -161,6 +172,16 @@ export default function Board(){
     id = "board"
     ref = {boardRef}
     >
-    {board}</div>
+    {board}
+    <div className="modal hidden" ref = {gameOverRef}>
+        <div className="modal-body">
+            <div className='gameOver-body'>
+                <span>{winner} Won!</span>
+                <button onClick={restartGame}>Play again</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    
     )
 }
