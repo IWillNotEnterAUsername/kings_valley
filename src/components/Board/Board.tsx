@@ -8,7 +8,9 @@ import { verticalAxis,
     PieceColor, 
     initialBoardState, 
     Position,
-    gridSize
+    gridSize,
+    samePosition,
+    sun
 } from '../../Constants';
 
 
@@ -24,9 +26,22 @@ export default function Board(){
 
     const moveset = new Moveset();
 
+    function updateValidMoves(){
+        setPieces((currentPieces) => {
+            return currentPieces.map(p => {
+                p.possibleMoves = moveset.getValidMoves(p, currentPieces);
+                return p;
+            });
+        });
+    }
+
     function grabPiece(e: React.MouseEvent){
+
+        updateValidMoves();
+
         const element = e.target as HTMLElement;
         const board = boardRef.current;
+
         if (element.classList.contains("piece") && board){
             const grabX = Math.floor((e.clientX - board.offsetLeft) / gridSize);
             const grabY = Math.abs(Math.ceil((e.clientY - board.offsetTop - 1000) / gridSize))
@@ -36,8 +51,8 @@ export default function Board(){
             });
 
 
-            const x = e.clientX - 100;
-            const y = e.clientY - 100;        
+            const x = e.clientX - gridSize / 2;
+            const y = e.clientY - gridSize / 2;        
             element.style.position = "absolute";
             element.style.left = `${x}px`;
             element.style.top = `${y}px`;
@@ -56,8 +71,8 @@ export default function Board(){
             const minY = board.offsetTop;
             const maxX = board.offsetLeft  + board.clientWidth - gridSize;
             const maxY = board.offsetTop + board.clientHeight - gridSize;            
-            const x = e.clientX - gridSize/2;
-            const y = e.clientY - gridSize/2;        
+            const x = e.clientX - gridSize / 2;
+            const y = e.clientY - gridSize / 2;        
             activePiece.style.position = "absolute";
 
             if(x < minX){
@@ -93,7 +108,7 @@ export default function Board(){
 
             setPieces(value =>{
                 const pieces = value.map(p =>{
-                    if(p.position.x === grabPosition.x && p.position.y === grabPosition.y){
+                    if(samePosition(p.position, grabPosition)){
                         const validMove = moveset.isValidMove(grabPosition, {x,y}, p.type, p.color, value);
                         if(validMove){
                             p.position.x = x;
@@ -111,19 +126,33 @@ export default function Board(){
             })
             setActivePiece(null);
         }
-    }    
-
+    }
+        
     let board = [];
     for(let j = verticalAxis.length - 1; j >= 0; j--){
         for(let i = 0; i < horizontalAxis.length; i++){
-            const number = j + i + 2;
 
+            const number = j + i + 2;
             const piece = pieces.find(p => p.position.x === i && p.position.y === j);
             let image = piece ? piece.image : undefined;
 
-            board.push(<Tile key={`${j},${i}`} image={image} number={number} />);
+            let currentPiece = activePiece != null ? pieces.find(p => samePosition(p.position, grabPosition)) : undefined;
+            let highlight = currentPiece?.possibleMoves ? currentPiece.possibleMoves.some(p => samePosition(p, {x: i ,y: j})) : false
+
+            if(i === 2 && j === 2){
+                const className: string = ["tile black-tile",
+                highlight && "sun-highlight"].filter(Boolean).join(' ');
+
+                board.push(<div key={`${j},${i}`} className={className}>
+                    {sun && <div style={{backgroundImage : `url(${sun})`}} className='icon'></div>}</div>)
+                continue;
+
+            }
+
+            board.push(<Tile key={`${j},${i}`} image={image} number={number} highlight={highlight} />);
         }
     }
+    
     return (
     <div 
     onMouseMove={e => movePiece(e)} 
