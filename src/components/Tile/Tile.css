@@ -13,6 +13,14 @@
     background-size: 160px;
 }
 
+.tile .icon {
+    width: 200px;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 160px;
+}
+
 
 .tile .piece:hover {
     cursor: grab;
@@ -29,6 +37,7 @@
 .white-tile {
     background-color: #ebecd0;
 }
+
 
 .tile img {
     width: 150px;
